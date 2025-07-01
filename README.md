@@ -7,6 +7,7 @@ This project implements a simple Telegram bot that stores user messages as memor
 - Node.js 20+
 - A Telegram bot token
 - A RecallIO API key and project ID
+- An OpenAI API key
 
 ## Setup
 
@@ -20,8 +21,8 @@ This project implements a simple Telegram bot that stores user messages as memor
 
    ```bash
    cp .env.example .env
-   # Edit .env and set TELEGRAM_TOKEN, RECALLIO_API_KEY and RECALLIO_PROJECT_ID
-   ```
+   # Edit .env and set TELEGRAM_TOKEN, RECALLIO_API_KEY, RECALLIO_PROJECT_ID and OPENAI_API_KEY
+  ```
 
 ## Build
 
@@ -41,4 +42,4 @@ After building, start the bot with:
 npm start
 ```
 
-The bot will store every non-command message as a memory and will respond to `/recall <query>` with the best matching memory content.
+The bot stores each message and answer as memories. When you send a normal message it will summarize relevant memories, call OpenAI to generate a reply, and then store both your request and the answer. Use `/recall <query>` to search your memories directly.
