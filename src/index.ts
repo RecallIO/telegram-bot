@@ -34,9 +34,13 @@ bot.on('message', async (msg) => {
         userId,
         projectId,
         query,
-        scope: 'user'
+        scope: 'user',
+        limit: 10,
+        similarityThreshold: 0.2,
+        tags: ['telegram'],
+        summarized: true
       });
-      const response = result.content || 'No memory found.';
+      const response = result.length > 0 && result[0].content || 'No memory found.';
       await bot.sendMessage(chatId, response);
     } catch (err) {
       await bot.sendMessage(chatId, 'Failed to recall memory.');
@@ -53,9 +57,15 @@ bot.on('message', async (msg) => {
       projectId,
       query: text,
       scope: 'user',
+      limit: 10,
+      similarityThreshold: 0.2,
+      tags: ['telegram'],
       summarized: true
     });
-    const summary = (recallResult && recallResult.content) || '';
+
+    console.log('recallResult:', JSON.stringify(recallResult, null, 2));
+    
+    const summary = (recallResult && recallResult.length > 0 && recallResult[0].content) || '';
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
@@ -75,16 +85,10 @@ bot.on('message', async (msg) => {
       userId,
       projectId,
       content: text,
+      tags: ['telegram'],
       consentFlag: true
     });
-    if (answer) {
-      await recallClient.writeMemory({
-        userId,
-        projectId,
-        content: answer,
-        consentFlag: true
-      });
-    }
+    
   } catch (err) {
     console.error('Failed to process message', err);
     await bot.sendMessage(chatId, 'Failed to process your message.');
