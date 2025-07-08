@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import TelegramBot from 'node-telegram-bot-api';
-import { RecallioClient } from 'recallio';
+import { RecallioClient, type MemoryRecallRequest } from 'recallio';
 import OpenAI from 'openai';
 
 dotenv.config();
@@ -30,7 +30,7 @@ bot.on('message', async (msg) => {
   if (recallMatch) {
     const query = recallMatch[1];
     try {
-      const result = await recallClient.recallMemory({
+      const recallRequest: MemoryRecallRequest = {
         userId,
         projectId,
         query,
@@ -38,10 +38,17 @@ bot.on('message', async (msg) => {
         limit: 10,
         similarityThreshold: 0.2,
         tags: ['telegram'],
-        summarized: true
-      });
-      const response = result.length > 0 && result[0].content || 'No memory found.';
-      await bot.sendMessage(chatId, response);
+        summarized: true,
+        reRank: true,
+        type: 'fact'
+      };
+
+      const result = await recallClient.recallMemory(recallRequest);
+      const response = result
+        .map(r => r.content)
+        .filter((c): c is string => Boolean(c))
+        .join('\n');
+      await bot.sendMessage(chatId, response || 'No memory found.');
     } catch (err) {
       await bot.sendMessage(chatId, 'Failed to recall memory.');
     }
@@ -52,7 +59,7 @@ bot.on('message', async (msg) => {
   if (text.startsWith('/')) return;
 
   try {
-    const recallResult = await recallClient.recallMemory({
+    const recallRequest: MemoryRecallRequest = {
       userId,
       projectId,
       query: text,
@@ -60,12 +67,19 @@ bot.on('message', async (msg) => {
       limit: 10,
       similarityThreshold: 0.2,
       tags: ['telegram'],
-      summarized: true
-    });
+      summarized: true,
+      reRank: true,
+      type: 'fact'
+    };
+
+    const recallResult = await recallClient.recallMemory(recallRequest);
 
     console.log('recallResult:', JSON.stringify(recallResult, null, 2));
     
-    const summary = (recallResult && recallResult.length > 0 && recallResult[0].content) || '';
+    const summary = recallResult
+      .map(r => r.content)
+      .filter((c): c is string => Boolean(c))
+      .join('\n');
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
