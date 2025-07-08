@@ -11,7 +11,7 @@
     "dotenv": "^16.3.1",
     "node-telegram-bot-api": "^0.61.0",
     "openai": "^5.8.2",
-    "recallio": "^1.1.1"
+    "recallio": "^1.1.2"
   },
   "devDependencies": {
     "@types/node": "^24.0.8",
