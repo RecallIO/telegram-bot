@@ -37,10 +37,7 @@ bot.on('message', async (msg) => {
         scope: 'user',
         limit: 10,
         similarityThreshold: 0.2,
-        tags: ['telegram'],
-        summarized: true,
-        reRank: true,
-        type: 'fact'
+        tags: ['telegram']
       };
 
       const result = await recallClient.recallMemory(recallRequest);
@@ -66,10 +63,7 @@ bot.on('message', async (msg) => {
       scope: 'user',
       limit: 10,
       similarityThreshold: 0.2,
-      tags: ['telegram'],
-      summarized: true,
-      reRank: true,
-      type: 'fact'
+      tags: ['telegram']
     };
 
     const recallResult = await recallClient.recallMemory(recallRequest);
