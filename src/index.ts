@@ -35,8 +35,6 @@ bot.on('message', async (msg) => {
         projectId,
         query,
         scope: 'user',
-        limit: 10,
-        similarityThreshold: 0.2,
         tags: ['telegram']
       };
 
@@ -61,8 +59,6 @@ bot.on('message', async (msg) => {
       projectId,
       query: text,
       scope: 'user',
-      limit: 10,
-      similarityThreshold: 0.2,
       tags: ['telegram']
     };
 
